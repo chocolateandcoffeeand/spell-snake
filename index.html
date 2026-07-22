@@ -885,6 +885,15 @@ function loadJSON(key, mem, fallback){
   return mem || fallback;
 }
 let progressData = loadJSON(PROG_KEY, memProg, { caves:{} });
+/* デバッグプレビュー: マップも全洞窟クリア＆クラウン状態にして「達成後の見た目」を確認できるようにする */
+if(DEBUG_ROOM_MODE){
+  progressData = { caves:{} };
+  MOUNTAINS.forEach(mt=>{
+    mt.caves.forEach(cv=>{
+      progressData.caves[cv.id] = { h1:1, h2:1, cq:1, crown:1 };
+    });
+  });
+}
 let customData = loadJSON(CUSTOM_KEY, memCustom, { name:"じぶんの山", caves:[] });
 function saveProgress(){ if(DEBUG_ROOM_MODE) return; memProg = progressData; try{ localStorage.setItem(PROG_KEY, JSON.stringify(progressData)); }catch(e){} }
 function saveCustom(){ if(DEBUG_ROOM_MODE) return; memCustom = customData; try{ localStorage.setItem(CUSTOM_KEY, JSON.stringify(customData)); }catch(e){} }
@@ -922,11 +931,13 @@ function saveReward(){ if(DEBUG_ROOM_MODE) return; memReward = rewardData; try{ 
 
 /* デバッグプレビュー: 実データは読み込んだままメモリ上でだけ「全部そろった状態」に差し替える（保存はされない） */
 if(DEBUG_ROOM_MODE){
+  const allCaveIds = [];
+  MOUNTAINS.forEach(mt=> mt.caves.forEach(cv=> allCaveIds.push(cv.id)));
   rewardData = {
     xp: 99999,
     gems: { ruby:9, amethyst:9, tourmaline:9, emerald:9, sapphire:9, citrine:9, opal:9, aquamarine:9, garnet:9, diamond:9, rainbow:9 },
     furniture: [], // FURNITURE_LIST定義後に埋める
-    rewardedCaves: [],
+    rewardedCaves: allCaveIds,
     mistakeWords: [],
     lakeDrops: 7,
     normalClearsSinceLake: 0,
