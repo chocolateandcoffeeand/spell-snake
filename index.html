@@ -321,14 +321,8 @@
     height:0; padding-bottom:124.96%;  /* 1402/1122のアスペクト比をパディングトリックで確保（aspect-ratio未対応環境でも安定動作） */
     border-radius:18px; overflow:hidden; border:2px solid rgba(122,98,72,.3);
     box-shadow:0 4px 14px rgba(122,90,58,.2);
-    background:#e9d9b8;
+    background-color:#e9d9b8; background-size:cover; background-position:center;
   }
-  .roomStage.noBg {
-    background:
-      radial-gradient(circle at 30% 20%, rgba(255,255,255,.25), transparent 60%),
-      linear-gradient(180deg, #e9d9b8 0%, #cdb185 100%);
-  }
-  #roomBgImg { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
   #roomFurnitureLayer { position:absolute; inset:0; }
   #roomSnakeLayer { position:absolute; inset:0; pointer-events:none; }
   .roomSnakeCompanion {
@@ -557,7 +551,6 @@
     <div class="roomStatBox">💧しずく<br><span id="roomDrops">0</span></div>
   </div>
   <div id="roomStage" class="roomStage">
-    <img id="roomBgImg" src="" alt="" onerror="this.style.display='none'; document.getElementById('roomStage').classList.add('noBg');">
     <div id="roomFurnitureLayer"></div>
     <div id="roomSnakeLayer"></div>
   </div>
@@ -3035,7 +3028,7 @@ $("titleCreatures").src = CREATURES_IMG_DATA;
   el.style.backgroundSize = "cover";
   el.style.backgroundPosition = "center";
 });
-$("roomBgImg").src = ROOM_ASSETS.background;
+$("roomStage").style.backgroundImage = `url(${ROOM_ASSETS.background})`;
 if(DEBUG_ROOM_MODE){
   openRoom();
 }else{
