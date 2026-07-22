@@ -98,6 +98,8 @@
   .btn.gray { background:linear-gradient(180deg,#e3d5bd,#c9b592); color:#4a3826; box-shadow:0 5px 0 #a08a63, 0 8px 18px rgba(122,90,58,.3); }
   .btn.small { font-size:14px; padding:9px 20px; }
   .linkBtn { color:#a58a63; font-weight:700; font-size:13px; cursor:pointer; text-decoration:underline; background:none; border:none; font-family:inherit; }
+  .linkBtn.dangerLink { color:#b0472f; margin-top:18px; opacity:.75; }
+  .btn.danger { background:linear-gradient(180deg,#ff8a7a,#e0503f); color:#fff; box-shadow:0 5px 0 #b8392a, 0 8px 20px rgba(122,90,58,.3); }
   #celebCanvas { border-radius:20px; box-shadow:0 4px 14px rgba(122,90,58,.25); }
   .stats { display:flex; gap:16px; color:#4a3826; font-weight:800; font-size:15px; flex-wrap:wrap; justify-content:center; }
   .stats span { color:#c77b00; }
@@ -435,6 +437,7 @@
     「洞窟工房」で自分専用ステージもつくれるよ！
   </p>
   <button class="btn" id="startBtn">ぼうけんに出発！</button>
+  <button class="linkBtn dangerLink" id="resetAllBtn">🗑️ すべてのデータをリセット</button>
 </div>
 
 <div id="storyScreen" class="screen center storyScreen hidden">
@@ -2239,15 +2242,38 @@ function buyFurniture(id){
 }
 
 /* ---------- 確認モーダル（つくる／キャンセル） ---------- */
-function showConfirm(message, onOk){
+function showConfirm(message, onOk, okLabel, danger){
   $("confirmMessage").innerHTML = message.replace(/\n/g, "<br>");
   $("confirmOverlay").classList.remove("hidden");
   const okBtn = $("confirmOkBtn");
   const cancelBtn = $("confirmCancelBtn");
-  const cleanup = ()=>{ $("confirmOverlay").classList.add("hidden"); okBtn.onclick=null; cancelBtn.onclick=null; };
+  okBtn.textContent = okLabel || "つくる";
+  okBtn.classList.toggle("danger", !!danger);
+  const cleanup = ()=>{
+    $("confirmOverlay").classList.add("hidden");
+    okBtn.onclick=null; cancelBtn.onclick=null;
+    okBtn.textContent = "つくる";
+    okBtn.classList.remove("danger");
+  };
   okBtn.onclick = ()=>{ cleanup(); onOk(); };
   cancelBtn.onclick = cleanup;
 }
+
+/* ================= データリセット ================= */
+function resetAllData(){
+  showConfirm(
+    "本当にすべてのデータを消しますか？\n\nXP・宝石・家具・クリア状況・\n洞窟工房で作った洞窟が\nすべて消えて、元に戻せません。",
+    ()=>{
+      try{
+        [PROG_KEY, CUSTOM_KEY, REWARD_KEY, INTRO_KEY].forEach(k => localStorage.removeItem(k));
+      }catch(e){}
+      location.reload();
+    },
+    "消去する",
+    true
+  );
+}
+$("resetAllBtn").addEventListener("click", resetAllData);
 
 /* ================= パーティクル ================= */
 function burst(x,y,color,n=12,ch=null){
