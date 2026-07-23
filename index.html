@@ -1232,7 +1232,7 @@ let justBuiltId = null;
 let curCave = null, curMtIdx = 0, sectionKey = "h1", sectionMode = 1;
 let sessionWords = [], wordIdx = 0, progress = 0;
 let combo = 0, maxCombo = 0, lives = 3, score = 0;
-let heartRegenCounter = 0;   // 正解した文字を累計でカウント（連続でなくてOK）。3たまるとハート+1
+let heartRegenCounter = 0;   // 正解した単語数を累計でカウント（連続でなくてOK）。3たまるとハート+1
 let clearedWords = [], sessionMistakes = 0;
 let snake, letters=[], particles=[], floaties=[], sparkles=[];
 let queue = [];
@@ -1826,6 +1826,7 @@ function completeWord(now){
   clearedWords.push(cw.w);
   combo++;
   maxCombo = Math.max(maxCombo, combo);
+  tryHeartRegen();
   const timeBonus = Math.max(0, Math.ceil((wordDeadline - now)/1000)) * 2;
   const bonus = cw.w.length*10 + combo*5 + timeBonus;
   score += bonus;
@@ -2405,7 +2406,6 @@ function update(dt, now){
       burst(target.x, target.y, target.color, 8);
       progress++;
       score += 5;
-      tryHeartRegen();
       lastProgressTime = now;
       if(progress >= currentWord().w.length){ completeWord(now); }
       else { refillRandom(); refreshHUD(); }
